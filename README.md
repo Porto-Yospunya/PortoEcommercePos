@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Commerce Web App
+
+A modern full-stack e-commerce web application built with NextJS (frontend & Backend). This platform enables users to browse products, add them to a shopping cart, and complete orders securely.
+
+## Features
+
+- Product Browsing and Searching
+- Shopping Cart and Checkout
+- User Authentication and Authorization (JWT)
+- Order Management
+- Payment Integration (e.g., Stripe/PayPal)
+- Admin Dashboard (Product/Order/User management)
+
+## Tech Stack
+
+### Frontend
+
+- NextJS
+- Context API
+- TailwindCSS
+- Axios
+
+### Backend
+
+- MySQL
+- JWT Authentication
+- Docker & Docker Compose
+- Cloudflare Tunnel (optional for public access)
 
 ## Getting Started
 
-First, run the development server:
+Node.js
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Docker & Docker Compose
+
+(Optional) Cloudflare Tunnel
+
+### 1. Clone the Repository bash Copy Edit
+   ``` bash
+   git clone https://github.com/Porto-Yospunya/ecommerce-webapp.git
+   cd ecommerce-webapp
+   ```
+### 2. Setup Environment Variables
+
+   Create the following .env files:
+
+   /.env.local
+
+   ```bash
+   # From Database
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=<your_password>
+   DB_DATABASE=<your_database>
+   DB_PORT=3307
+
+   # From App
+   BASE_API_URL=http://localhost:3000/api
+   ```
+
+   /.env.docker
+
+   ```bash
+   # From Database
+   DB_HOST=<your_docker_container>
+   DB_USER=root
+   DB_PASSWORD=<your_password>
+   DB_DATABASE=<your_database>
+   DB_PORT=3306
+
+   # From App
+   BASE_API_URL=http://localhost:3000/api
+   ```
+
+### 3. Run with Docker Compose
+   ```bash
+   docker-compose up --build
+   ```
+
+## Project Structure
+
+```
+ecommerce-webapp
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## TODO
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Basic product listing & cart
+- User registration with email verification
+- Admin panel for managing inventory
+- Payment gateway integration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Authors
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Porto @Porto-Yospunya
