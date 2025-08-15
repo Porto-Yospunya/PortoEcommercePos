@@ -40,9 +40,9 @@ export default function Users() {
     image: user.image,
     name: user.name,
     email: user.email,
-    phone: user.userPhone ?? "",
+    phone: user.phone ?? "",
     role: user.role as "admin" | "cashier" | "customer",
-    organizationId: user.organizationId ?? "",
+    organization: user.organization?.name ?? "",
   }));
 
   return (

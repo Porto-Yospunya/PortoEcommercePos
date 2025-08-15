@@ -26,7 +26,7 @@ export const GET = async (
         email: true,
         phone: true,
         role: true,
-        organization_id: true,
+        organizations: true,
       },
     });
 
@@ -35,15 +35,18 @@ export const GET = async (
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const { full_name, organization_id, ...reset } = user;
+    const { full_name, organizations, ...reset } = user;
 
     // Determine form data
     const data = {
       ...reset,
       id: stringify(user.id),
       fullName: full_name,
-      organizationId:
-        organization_id !== null ? stringify(organization_id) : null,
+      organization:
+        organizations !== null ? {
+          id: stringify(organizations.id),
+          name: organizations?.name
+        } : null,
     };
 
     return NextResponse.json(data);
@@ -73,6 +76,7 @@ export const PUT = async (
     const fullName = formData.get("fullName")?.toString() || "";
     const email = formData.get("email")?.toString() || "";
     const phone = formData.get("phone")?.toString() || "";
+    const organizationId = formData.get("organizationId")?.toString() || "";
     // const line1 = formData.get("line1")?.toString() || "";
     // const line2 = formData.get("line2")?.toString() || "";
     // const addressPhone = formData.get("addressPhone")?.toString() || "";
@@ -114,6 +118,7 @@ export const PUT = async (
         full_name: fullName,
         email: email,
         phone: phone,
+        organization_id: parse(organizationId),
         image: imageUrl,
       },
     });

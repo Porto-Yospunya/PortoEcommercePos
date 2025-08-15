@@ -8,7 +8,10 @@ export const baseUserSchema = z.object({
   phone: z.string().optional(),
   role: z.string().optional(),
   email: z.string().email("Email is incorrect format"),
-  organizationId: z.string().optional(),
+  organization: z.object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+  }),
 });
 
 export const createUserSchema = baseUserSchema
@@ -35,4 +38,5 @@ export const userSchemaValue: UserSchemaType = {
   id: "",
   name: "",
   email: "",
+  organization: {}
 }

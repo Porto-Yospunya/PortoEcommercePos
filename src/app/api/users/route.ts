@@ -17,18 +17,18 @@ export const GET = async () => {
         email: true,
         phone: true,
         role: true,
-        organization_id: true,
+        organizations: true,
       }
     });
 
-    const data = users.map(({ full_name, organization_id, ...reset }) => ({
+    const data = users.map(({ full_name, organizations, ...reset }) => ({
       ...reset,
       id: stringify(reset.id),
       fullName: full_name,
-      organizationId:
-        organization_id !== null
-          ? stringify(organization_id)
-          : null,
+      organization: organizations !== null ? {
+        id: stringify(organizations.id),
+        name: organizations.name,
+      } : null,
     }));
 
     return NextResponse.json(data);
