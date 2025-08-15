@@ -1,0 +1,321 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model addresses {
+  id              Int            @id @default(autoincrement())
+  phone           String?        @db.VarChar(20)
+  line1           String?        @db.VarChar(100)
+  line2           String?        @db.VarChar(100)
+  sub_district    String?        @db.VarChar(100)
+  district        String?        @db.VarChar(100)
+  province        String?        @db.VarChar(100)
+  postal_code     String?        @db.VarChar(10)
+  country         String?        @db.VarChar(100)
+  created_at      DateTime?      @default(now()) @db.Timestamp(0)
+  user_id         Bytes?         @db.Binary(16)
+  organization_id Bytes?         @db.Binary(16)
+  users           users?         @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "addresses_ibfk_1")
+  organizations   organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade, map: "addresses_ibfk_2")
+
+  @@index([organization_id], map: "organization_id")
+  @@index([user_id], map: "user_id")
+}
+
+model cart {
+  id          Bytes        @id @db.Binary(16)
+  created_at  DateTime?    @default(now()) @db.Timestamp(0)
+  updated_at  DateTime?    @default(now()) @db.Timestamp(0)
+  customer_id Bytes        @db.Binary(16)
+  users       users        @relation(fields: [customer_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cart_ibfk_1")
+  cart_items  cart_items[]
+
+  @@index([customer_id], map: "customer_id")
+}
+
+model cart_items {
+  quantity   Int?     @default(1)
+  cart_id    Bytes    @db.Binary(16)
+  product_id Bytes    @db.Binary(16)
+  cart       cart     @relation(fields: [cart_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cart_items_ibfk_1")
+  products   products @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "cart_items_ibfk_2")
+
+  @@id([cart_id, product_id])
+  @@index([product_id], map: "product_id")
+}
+
+model categories {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique(map: "name") @db.VarChar(100)
+  products products[]
+}
+
+model logs {
+  id              Bytes          @id @db.Binary(16)
+  event_type      String         @db.VarChar(50)
+  action          String         @db.VarChar(100)
+  target_table    String         @db.VarChar(100)
+  target_id       Bytes          @db.Binary(16)
+  data            Json?
+  ip_address      String?        @db.VarChar(45)
+  user_agent      String?        @db.Text
+  created_at      DateTime?      @default(now()) @db.DateTime(0)
+  user_id         Bytes?         @db.Binary(16)
+  organization_id Bytes?         @db.Binary(16)
+  users           users?         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "logs_ibfk_1")
+  organizations   organizations? @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "logs_ibfk_2")
+
+  @@index([organization_id], map: "organization_id")
+  @@index([user_id], map: "user_id")
+}
+
+model order_items {
+  unit_price   Decimal  @db.Decimal(10, 2)
+  quantity     Int
+  order_id     Bytes    @db.Binary(16)
+  product_id   Bytes    @db.Binary(16)
+  product_name String   @db.VarChar(255)
+  orders       orders   @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_items_ibfk_1")
+  products     products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_items_ibfk_2")
+
+  @@id([order_id, product_id])
+  @@index([product_id], map: "product_id")
+}
+
+model order_return_items {
+  quantity      Int
+  return_id     Bytes         @db.Binary(16)
+  product_id    Bytes         @db.Binary(16)
+  order_returns order_returns @relation(fields: [return_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_return_items_ibfk_1")
+  products      products      @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_return_items_ibfk_2")
+
+  @@id([return_id, product_id])
+  @@index([product_id], map: "product_id")
+}
+
+model order_returns {
+  id                 Bytes                        @id @db.Binary(16)
+  return_reason      String?                      @db.Text
+  return_status      order_returns_return_status? @default(requested)
+  refund_amount      Decimal?                     @default(0.00) @db.Decimal(10, 2)
+  requested_at       DateTime?                    @default(now()) @db.Timestamp(0)
+  processed_at       DateTime?                    @db.DateTime(0)
+  order_id           Bytes?                       @db.Binary(16)
+  order_return_items order_return_items[]
+  orders             orders?                      @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_returns_ibfk_1")
+
+  @@index([order_id], map: "order_id")
+}
+
+model orders {
+  id                              Bytes           @id @db.Binary(16)
+  receipt_id                      String          @unique(map: "receipt_id") @db.VarChar(50)
+  status                          orders_status?  @default(pending)
+  total                           Decimal         @db.Decimal(10, 2)
+  channel                         orders_channel
+  discount                        Decimal?        @default(0.00) @db.Decimal(10, 2)
+  vat_rate                        Decimal?        @default(7.00) @db.Decimal(5, 2)
+  vat_amount                      Decimal?        @default(0.00) @db.Decimal(10, 2)
+  is_tax_invoice                  Boolean?        @default(false)
+  order_date                      DateTime?       @default(now()) @db.Timestamp(0)
+  created_by                      Bytes?          @db.Binary(16)
+  customer_id                     Bytes?          @db.Binary(16)
+  organization_id                 Bytes?          @db.Binary(16)
+  order_items                     order_items[]
+  order_returns                   order_returns[]
+  users_orders_created_byTousers  users?          @relation("orders_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orders_ibfk_1")
+  users_orders_customer_idTousers users?          @relation("orders_customer_idTousers", fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orders_ibfk_2")
+  organizations                   organizations?  @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orders_ibfk_3")
+  payments                        payments[]
+
+  @@index([created_by], map: "created_by")
+  @@index([customer_id], map: "customer_id")
+  @@index([organization_id], map: "organization_id")
+}
+
+model organizations {
+  id            Bytes               @id @db.Binary(16)
+  name          String              @unique(map: "name") @db.VarChar(255)
+  type          organizations_type?
+  tax_id        String?             @db.VarChar(20)
+  contact_name  String?             @db.VarChar(100)
+  contact_phone String?             @db.VarChar(20)
+  created_at    DateTime?           @default(now()) @db.Timestamp(0)
+  updated_at    DateTime?           @default(now()) @db.Timestamp(0)
+  addresses     addresses[]
+  logs          logs[]
+  orders        orders[]
+  users         users[]
+}
+
+model payments {
+  id              Bytes                     @id @db.Binary(16)
+  ref_code        String?                   @db.VarChar(100)
+  payment_methods payments_payment_methods? @default(cash)
+  paid_amount     Decimal?                  @db.Decimal(10, 2)
+  payment_status  payments_payment_status?  @default(pending)
+  paid_date       DateTime                  @db.DateTime(0)
+  created_at      DateTime?                 @default(now()) @db.Timestamp(0)
+  updated_at      DateTime?                 @default(now()) @db.Timestamp(0)
+  order_id        Bytes                     @db.Binary(16)
+  orders          orders                    @relation(fields: [order_id], references: [id], onDelete: Cascade, map: "payments_ibfk_1")
+
+  @@index([order_id], map: "order_id")
+}
+
+model products {
+  id                   Bytes                  @id @db.Binary(16)
+  sku                  String                 @unique(map: "sku") @db.VarChar(50)
+  name                 String                 @unique(map: "name") @db.VarChar(255)
+  image                String?                @db.VarChar(255)
+  description          String?                @db.Text
+  stock                Int?                   @default(0)
+  stock_min            Int?                   @default(0)
+  price                Decimal?               @default(0.00) @db.Decimal(10, 2)
+  created_at           DateTime?              @default(now()) @db.Timestamp(0)
+  updated_at           DateTime?              @default(now()) @db.Timestamp(0)
+  unit_id              Int
+  category_id          Int
+  cart_items           cart_items[]
+  order_items          order_items[]
+  order_return_items   order_return_items[]
+  categories           categories             @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_category")
+  units                units                  @relation(fields: [unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_unit")
+  stock_received_items stock_received_items[]
+
+  @@index([category_id], map: "fk_products_category")
+  @@index([unit_id], map: "fk_products_unit")
+}
+
+model stock_received {
+  id                   Bytes                  @id @db.Binary(16)
+  ref_code             String                 @unique(map: "ref_code") @db.VarChar(50)
+  received_date        DateTime               @db.DateTime(0)
+  created_at           DateTime?              @default(now()) @db.Timestamp(0)
+  created_by           Bytes                  @db.Binary(16)
+  users                users                  @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "stock_received_ibfk_1")
+  stock_received_items stock_received_items[]
+
+  @@index([created_by], map: "created_by")
+}
+
+model stock_received_items {
+  quantity          Int
+  unit_cost         Decimal        @db.Decimal(10, 2)
+  stock_received_id Bytes          @db.Binary(16)
+  product_id        Bytes          @db.Binary(16)
+  stock_received    stock_received @relation(fields: [stock_received_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "stock_received_items_ibfk_1")
+  products          products       @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "stock_received_items_ibfk_2")
+
+  @@id([stock_received_id, product_id])
+  @@index([product_id], map: "product_id")
+}
+
+model stores {
+  id         Bytes     @id @db.Binary(16)
+  name       String    @db.VarChar(255)
+  phone      String?   @db.VarChar(20)
+  logo       String?   @db.VarChar(255)
+  tax_id     String?   @db.VarChar(20)
+  email      String?   @db.VarChar(100)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+  owner_id   Bytes     @db.Binary(16)
+  users      users     @relation(fields: [owner_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_stores_user")
+
+  @@index([owner_id], map: "fk_stores_user")
+}
+
+model units {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique(map: "name") @db.VarChar(100)
+  products products[]
+}
+
+model user_settings {
+  id            Int       @id @default(autoincrement())
+  setting_key   String    @db.VarChar(100)
+  setting_value String?   @db.Text
+  updated_at    DateTime? @default(now()) @db.Timestamp(0)
+  user_id       Bytes     @db.Binary(16)
+  users         users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_settings_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model users {
+  id                               Bytes            @id @db.Binary(16)
+  name                             String           @unique(map: "name") @db.VarChar(50)
+  full_name                        String?          @db.VarChar(100)
+  image                            String?          @db.VarChar(255)
+  phone                            String?          @db.VarChar(20)
+  email                            String           @unique(map: "email") @db.VarChar(100)
+  password                         String           @db.VarChar(255)
+  role                             users_role?      @default(customer)
+  created_at                       DateTime?        @default(now()) @db.Timestamp(0)
+  updated_at                       DateTime?        @default(now()) @db.Timestamp(0)
+  organization_id                  Bytes?           @db.Binary(16)
+  addresses                        addresses[]
+  cart                             cart[]
+  logs                             logs[]
+  orders_orders_created_byTousers  orders[]         @relation("orders_created_byTousers")
+  orders_orders_customer_idTousers orders[]         @relation("orders_customer_idTousers")
+  stock_received                   stock_received[]
+  stores                           stores[]
+  user_settings                    user_settings[]
+  organizations                    organizations?   @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+
+  @@index([organization_id], map: "organization_id")
+}
+
+enum order_returns_return_status {
+  requested
+  approve
+  rejected
+  completed
+}
+
+enum orders_status {
+  pending
+  paid
+  shipped
+  cancelled
+}
+
+enum organizations_type {
+  school
+  hospital
+  government
+  company
+  other
+}
+
+enum payments_payment_methods {
+  cash
+  credit_card
+  qr_payment
+}
+
+enum orders_channel {
+  web
+  pos
+}
+
+enum payments_payment_status {
+  pending
+  paid
+  failed
+  refunded
+}
+
+enum users_role {
+  admin
+  customer
+  cashier
+}

@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+@theme {
+  --color-dark: #373539;
+}
+
+body {
+  @apply bg-gray-100;
+}
+
+@utility btn-* {
+  @apply py-1 px-3 rounded font-semibold text-white cursor-pointer transition-all duration-200;
+  background-color: --value(--color-*);
+}
+
+@utility label {
+  @apply grid gap-1;
+
+  input, select {
+    @apply border-2 border-gray-200 px-2 py-1;
+  }
+
+  textarea {
+    @apply border-2 border-gray-200 px-2 py-1;
+  }
+
+  label {
+    @apply font-semibold grid;
+  }
+}
+
+@utility disabled-input {
+  div > input, 
+  div > textarea {
+    @apply bg-gray-200 text-gray-400;
+  }
+}
+
+@utility enabled-input {
+  div > input, 
+  div > textarea {
+    @apply bg-white text-black;
+  }
+}
+
+@utility table-field {
+  @apply table-fixed border-collapse;
+  thead > tr > th,
+  tbody > tr > td {
+    @apply py-2 px-4 truncate whitespace-nowrap; 
+  }
+}
