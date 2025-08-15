@@ -2,16 +2,14 @@ services:
   db:
     image: mysql:8.0
     container_name: ecommerce_db
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=${DB_DATABASE}
-      - TZ=Asia/Bangkok
     env_file:
       - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - TZ=Asia/Bangkok
     ports:
-      - "3307:3306"
+      - "${DB_PORT}:3306"
     volumes:
       - ./database/initdb:/docker-entrypoint-initdb.d
       - ./database/data:/var/lib/mysql
-      - ./database/timezone.cnf:/etc/mysql/conf.d/timezone.cnf
-      - /etc/localtime:/etc/localtime:ro

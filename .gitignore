@@ -42,6 +42,7 @@ next-env.d.ts
 
 # mysql
 database/data
+database/initdb/02-*
 public/uploads/*
 /src/generated/prisma
 
