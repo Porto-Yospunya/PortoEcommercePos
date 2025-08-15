@@ -41,4 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 # mysql
-mysql/data
+database/data
+public/uploads/*
+/src/generated/prisma
+
+/src/generated/prisma

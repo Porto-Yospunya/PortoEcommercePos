@@ -1,0 +1,6 @@
+export enum STATUS  {
+  IDLE = "IDLE",
+  HAS_SUCCESS = "HAS_SUCCESS",
+  HAS_ERROR = "HAS_ERROR",
+  IS_LOADING = "IS_LOADING",
+}

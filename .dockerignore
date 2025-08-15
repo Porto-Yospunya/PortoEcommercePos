@@ -6,4 +6,4 @@ node_modules
 Dockerfile
 docker-compose.yml
 
-mysql/data/
+database/data

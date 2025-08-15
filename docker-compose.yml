@@ -1,25 +1,28 @@
-services:  
+services:
   db:
     image: mysql:8.0
     container_name: ecommerce_db
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_DATABASE=ecommerce_store
+      - TZ=Asia/Bangkok
     ports:
-      - '3307:3306'
+      - "3307:3306"
     volumes:
-      - ./mysql/initdb/:/docker-entrypoint-initdb.d
-      # - ./mysql/data/:/var/lib/mysql
+      - ./database/initdb:/docker-entrypoint-initdb.d
+      - ./database/data:/var/lib/mysql
+      - ./database/timezone.cnf:/etc/mysql/conf.d/timezone.cnf
+      - /etc/localtime:/etc/localtime:ro
 
-  webapp:
-    build: .
-    container_name: ecommerce_webapp
-    env_file:
-      - .env.docker
-    depends_on:
-      - db
-    ports:
-      - '3000:3000'
-    volumes:
-      - .:/app
-    working_dir: /app
+  # webapp:
+  #   build: .
+  #   container_name: ecommerce_webapp
+  #   env_file:
+  #     - .env.docker
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - .:/app
+  #   working_dir: /app
