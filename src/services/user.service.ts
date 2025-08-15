@@ -56,7 +56,7 @@ export const updateUser = async (data: UpdateUserSchemaType) => {
       name: data.name,  
       email: data.email,
       phone: data.phone,
-      organizationId: data.organizationId,
+      organizationId: data.organization?.id,
     });
 
     if (data.image) {
