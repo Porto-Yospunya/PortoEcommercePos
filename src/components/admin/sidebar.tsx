@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboardIcon, ArchiveIcon, ReceiptIcon, LucideUsersRound, Building2Icon, Package2, Settings } from "lucide-react";
+import { LayoutDashboardIcon, ArchiveIcon, LucideUsersRound, Building2Icon, Package2, Settings } from "lucide-react";
 
 export const Sidebar = () => {
 
@@ -15,7 +15,6 @@ export const Sidebar = () => {
   const options = [
     { icon: <LayoutDashboardIcon />, label: "Dashboard", href: "/admin", },
     { icon: <ArchiveIcon/>, label: "Inventory", href: "/admin/inventory", },
-    { icon: <ReceiptIcon/>, label: "Stock In", href: "/admin/stock-in", },
     { icon: <Package2 />, label: "Orders", href: "/admin/orders", },
     { icon: <LucideUsersRound />, label: "Users", href: "/admin/users", },
     { icon: <Building2Icon />, label: "Organizations", href: "/admin/organizations", },
