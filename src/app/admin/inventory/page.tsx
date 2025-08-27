@@ -109,12 +109,22 @@ export default function Inventory() {
           </div>
         </SearchField>
 
-        <Link
-          href="/admin/inventory/add"
-          className="flex justify-self-end items-center w-fit text-white btn-blue-500 hover:btn-blue-800"
-        >
-          New Products
-        </Link>
+        <div className="flex gap-2 justify-end">
+          <Link
+            href="/admin/inventory/stock-in"
+            className="flex items-center w-fit text-white btn-yellow-500 hover:btn-yellow-800"
+          >
+            Stock In
+          </Link>
+
+          <Link
+            href="/admin/inventory/add"
+            className="flex items-center w-fit text-white btn-blue-500 hover:btn-blue-800"
+          >
+            New Products
+          </Link>
+        </div>
+
       </div>
 
       <TableField
