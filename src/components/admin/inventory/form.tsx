@@ -23,7 +23,7 @@ export const ProductForm = ({
   initialData?: UpdateProductSchemaType,
 }) => {
 
-  const isUpdate = Boolean(initialData?.id);
+  const isUpdate = Boolean(initialData);
   const schema = isUpdate ? updateProductSchema : createProductSchema;
 
   const router = useRouter();
