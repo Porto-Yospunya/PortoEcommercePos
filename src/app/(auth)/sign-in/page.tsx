@@ -5,16 +5,16 @@ import { signIn, useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { ErrorAlert } from "@/components/ui/alert";
-import { loginSchema, LoginSchemaType } from "@/schemas/user.schema";
 import { useEffect } from "react";
+import { loginUserSchema, LoginUserSchemaType } from "@/schemas/user.schema";
 
 export default function Login() {
 
   const { data: session } = useSession();
-  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(loginSchema) });
+  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(loginUserSchema) });
   const router = useRouter();
 
-  const onSubmit = async (data: LoginSchemaType) => {
+  const onSubmit = async (data: LoginUserSchemaType) => {
     try {
       const res = await signIn("credentials", {
         redirect: false,

@@ -14,6 +14,11 @@ export const baseUserSchema = z.object({
   }),
 });
 
+export const loginUserSchema = z.object({
+  email: z.string().email("Email is incorrect format"),
+  password: z.string(),
+});
+
 export const createUserSchema = baseUserSchema
   .omit({ id: true })
   .extend({
@@ -25,6 +30,7 @@ export const createUserSchema = baseUserSchema
     path: ["confirmPassword"],
   });
 
+
 export const updateUserSchema = baseUserSchema.partial();
 
 // Using show user
@@ -33,6 +39,8 @@ export type UserSchemaType = z.infer<typeof baseUserSchema>;
 export type CreateUserSchemaType = z.infer<typeof createUserSchema>;
 // Using update user
 export type UpdateUserSchemaType = z.infer<typeof updateUserSchema>;
+// Using login user
+export type LoginUserSchemaType = z.infer<typeof loginUserSchema>;
 
 export const userSchemaValue: UserSchemaType = {
   id: "",
