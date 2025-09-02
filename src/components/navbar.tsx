@@ -16,7 +16,7 @@ export const Navbar = () => {
     { label: "About", href: "/about", },
   ];
 
-  return !pathname.startsWith("/admin") ? (
+  return !pathname.startsWith("/admin") && !pathname.startsWith("/cashier") ? (
     <nav className="flex justify-between">
       <div>
         .Logo
