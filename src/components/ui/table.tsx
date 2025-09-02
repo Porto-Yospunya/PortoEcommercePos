@@ -8,7 +8,7 @@ type Header<T> = {
   key: keyof T | string;
   placeholder?: string;
   link?: string;
-  onClick?: () => void;
+  onClick?: (data: T) => void;
 }
 
 interface TableFieldProps<T> {
@@ -72,7 +72,7 @@ export function TableField<T>({
                           <SquarePen width={20} height={20} />
                         </Link>
                         <button
-                          onClick={header.onClick}
+                          onClick={() => header.onClick?.(row)}
                           className="border-2 border-gray-200 p-1 rounded mx-1 hover:bg-gray-200 hover:text-black text-red-500 cursor-pointer"
                         >
                           <Trash2 width={20} height={20} />

@@ -13,13 +13,26 @@ import { StockStatus } from "@/components/admin/inventory/stock-status";
 import { PanelField } from "@/components/ui/panel";
 import { useProducts } from "@/hooks/product.hook";
 import placeholder from "@/assets/box.png";
-import { ProductSchemaType, productSchemaValue } from "@/schemas/product.schema";
+import { ProductSchemaType } from "@/schemas/product.schema";
+
+type ProductFormDataType = {
+  id: string;
+  sku: string;
+  name: string;
+  image: string;
+  description?: string;
+  price: string;
+  stock: string;
+  status: React.ReactNode;
+  category: string;
+  unit: string;
+}
 
 export default function Inventory() {
 
   const [search, setSearch] = useState("");
   const [activeModal, setToggleModal] = useState(false);
-  const [item, setItem] = useState<ProductSchemaType>(productSchemaValue);
+  const [item, setItem] = useState<ProductFormDataType>();
 
   const { products, isLoading, mutate } = useProducts();
 
@@ -28,14 +41,15 @@ export default function Inventory() {
     item.sku.toLowerCase().includes(search.toLowerCase())
   ) : [];
 
-  const handleToggleModal = (item: ProductSchemaType) => {
+  const handleToggleModal = (item?: ProductFormDataType) => {
     setToggleModal(!activeModal);
     setItem(item);
   }
 
-  const handleDeleteData = async (item: ProductSchemaType) => {
+  const handleDeleteData = async (item?: ProductFormDataType) => {
     try {
-      const res = await deleteProduct(item.id ?? "");
+      if (!item) return;
+      const res = await deleteProduct(item.id);
       console.log(res);
       setToggleModal(!activeModal);
       mutate();
@@ -50,21 +64,7 @@ export default function Inventory() {
 
   const pagination = usePagination<ProductSchemaType>({ data: searchInventory, page: 100 });
 
-  const headers = [
-    { label: "Image", key: "image", placeholder: placeholder.src },
-    { label: "ID", key: "sku" },
-    { label: "Name", key: "name" },
-    { label: "Price", key: "price" },
-    { label: "Stock", key: "stock" },
-    { label: "Unit", key: "unit" },
-    { label: "Status", key: "status" },
-    { label: "Category", key: "category" },
-    { label: "Actions", key: "id", link: "/admin/inventory/add", onClick: () => !activeModal && handleToggleModal(item) }
-  ];
-
-  const colWidth = ["w-1/12", "w-1/6", "w-1/4", "w-1/10", "w-1/10", "w-1/10", "w-1/8", "w-1/8", "w-1/10"];
-
-  const productFormData = pagination.sliceData.map((product) => ({
+  const productFormData: ProductFormDataType[] = pagination.sliceData.map((product) => ({
     id: product.id ?? "",
     sku: product.sku,
     name: product.name,
@@ -76,6 +76,20 @@ export default function Inventory() {
     category: product.category.name,
     unit: product.unit.name,
   }));
+
+  const headers = [
+    { label: "Image", key: "image", placeholder: placeholder.src },
+    { label: "ID", key: "sku" },
+    { label: "Name", key: "name" },
+    { label: "Price", key: "price" },
+    { label: "Stock", key: "stock" },
+    { label: "Unit", key: "unit" },
+    { label: "Status", key: "status" },
+    { label: "Category", key: "category" },
+    { label: "Actions", key: "id", link: "/admin/inventory/add", onClick: (item: ProductFormDataType) => !activeModal && handleToggleModal(item) }
+  ];
+
+  const colWidth = ["w-1/12", "w-1/6", "w-1/4", "w-1/10", "w-1/10", "w-1/10", "w-1/8", "w-1/8", "w-1/10"];
 
   return (
     <PanelField
@@ -91,7 +105,7 @@ export default function Inventory() {
             </div>
             <div className="flex gap-4 justify-end">
               <button className="cursor-pointer px-2 py-1 rounded text-white bg-red-600 hover:bg-red-700 transition" onClick={() => handleDeleteData(item)}>Confirm</button>
-              <button className="cursor-pointer px-2 py-1 rounded text-gray-800 bg-gray-200 hover:bg-gray-300 transition" onClick={() => activeModal && handleToggleModal(productSchemaValue)}>Cancel</button>
+              <button className="cursor-pointer px-2 py-1 rounded text-gray-800 bg-gray-200 hover:bg-gray-300 transition" onClick={() => activeModal && handleToggleModal()}>Cancel</button>
             </div>
           </div>
         </Modal>
@@ -127,7 +141,7 @@ export default function Inventory() {
 
       </div>
 
-      <TableField
+      <TableField<ProductFormDataType>
         data={productFormData}
         headers={headers}
         colWidth={colWidth}
